@@ -8,7 +8,7 @@
 /// - `[UP]`, `[DOWN]`, `[LEFT]`, `[RIGHT]` — arrow keys
 /// - `[HOME]`, `[END]`, `[PGUP]`, `[PGDN]`, `[DELETE]`, `[BACKSPACE]`
 /// - `[F1]`..`[F12]`
-/// - `[TAB]`, `[SHIFT+TAB]`, `[ENTER]`, `[ESCAPE]`
+/// - `[TAB]`, `[SHIFT+TAB]`, `[ENTER]`, `[ESCAPE]` / `[ESC]`
 /// - `[CTRL+A]`..`[CTRL+Z]`
 /// - `[PASTE_START]`, `[PASTE_END]`
 pub fn process_special_keys(input: &str) -> Vec<u8> {
@@ -92,7 +92,7 @@ fn bracket_sequence(tag: &str) -> Option<&'static [u8]> {
         "TAB" => Some(b"\t"),
         "SHIFT+TAB" => Some(b"\x1b[Z"),
         "ENTER" => Some(b"\r"),
-        "ESCAPE" => Some(b"\x1b"),
+        "ESCAPE" | "ESC" => Some(b"\x1b"),
         "F1" => Some(b"\x1bOP"),
         "F2" => Some(b"\x1bOQ"),
         "F3" => Some(b"\x1bOR"),
@@ -180,6 +180,12 @@ mod tests {
     #[test]
     fn function_keys() {
         assert_eq!(process_special_keys("[F5]"), b"\x1b[15~");
+    }
+
+    #[test]
+    fn esc_alias() {
+        assert_eq!(process_special_keys("[ESC]"), b"\x1b");
+        assert_eq!(process_special_keys("[ESCAPE]"), b"\x1b");
     }
 
     #[test]
